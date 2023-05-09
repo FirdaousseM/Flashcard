@@ -1,11 +1,12 @@
 <script>
   import Api from './components/Api.svelte';
+    import CardSet from './components/CardSet.svelte';
 </script>
 
 
 <main>
   <h1>Flashcard</h1>
-  <Api></Api>
+  <CardSet></CardSet>
 </main>
 
 <style>
