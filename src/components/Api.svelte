@@ -1,6 +1,5 @@
 <script>
   import { onMount } from "svelte";
-  import { dictionaries } from "../scripts/Dictionnaries";
 
   let apiData = {};
   export let word;
@@ -24,22 +23,16 @@
 
 </script>
 
-
-
-<div class="recto">
-  <h2>{word}</h2>
-</div>
-
-<div class="verso">  
+<div>
   {#each meanings as meaning}
-  <div class="definition-block">
-    <span class="definition-block__type">{meaning.partOfSpeech} : </span>
-    <p class="definition-block__content">{meaning.definitions[0].definition}</p>
-  </div>
+    <div class="definition-title">
+      <h3>{meaning.partOfSpeech}</h3>
+    </div>
+    <div class="definition-desc">
+      <p>{meaning.definitions[0].definition}</p>
+    </div>
   {/each}
 </div>
-
-
 
 
 

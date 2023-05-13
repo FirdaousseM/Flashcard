@@ -1,30 +1,39 @@
 <!-- this is where the magic improt happens -->
 
 <script >
+
+  import { dictionaries } from '../scripts/Dictionnaries';
   import Api from './Api.svelte';
+
+  //export let setNumber;
+  let setNumber = 1;
+
+  let dictionary = dictionaries[setNumber];
+  let userDictionary = dictionary;
 
   let progress = 2 + 10;
   let isFlipped=false;
 //words and definitons are passed into an reactive array
 //card_number is the porsition of the array
 let card_number=1;
-$: word=[card_number] ;
+$: word=dictionaries[1][card_number] ;
 $:definition=[card_number];
 
 //functions
 const fun= () => isFlipped=!isFlipped;  
+
 const prevCard=()=>{
   let isFlipped=false;
   if(card_number===1){
-    //array of the card list -1
-    // card_number=1;
+    card_number = 9;
   }
   else{
     card_number-=1;
   }
  
-  }
-  const nextCard=()=>{
+}
+
+const nextCard=()=>{
   let isFlipped=false;
   if(card_number===10){
     card_number=0;
@@ -37,34 +46,37 @@ const prevCard=()=>{
 
 </script>
 <section>
+
   <div class="card">
     <div class="card__inner" class:flip={isFlipped}>
-        <div class="card__position cardRecto">
-            <h1>A word</h1>
+      <div class="card__position cardRecto">
+        <h1>{word}</h1>
+      </div>
+      <div class="card__position cardVerso">
+        <div class="card_content">
+          
+          <div class="definition-title">
+            <h3>monsieur</h3>
+          </div>
+          <div class="definition-desc">
+            <p>madame</p>
+          </div>
+          
+          
         </div>
-        <div class="card__position cardVerso">
-            <div class="card_content">
-
-              <div class="definition-title">
-                <h3>lorem</h3>
-              </div>
-              <div class="definition-desc">
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo porro saepe et expedita quas magnam ullam, vel quibusdam? Sint quisquam quos quibusdam debitis? Voluptate possimus voluptates maxime veritatis commodi ratione perferendis, nostrum, aspernatur, explicabo earum aliquid nulla nesciunt sed? Mollitia neque sed quae illo omnis natus laborum aut? Id, rem.</p>
-              </div>
-
-            </div>
-        </div>
+      </div>
     </div>
-  </div>
+  </div>  
+    
   <div class="progress-bar" >
     <div id="my_progress" style="width:{progress}%">
         <div id="my_bar"></div>
     </div>
   </div>
   <div class="buttonFlip">
-    <button class="button__left" on:click{prevCard}>prev</button>
+    <button class="button__left">prev</button>
     <button  on:click={fun}>Flip Back</button>
-    <button class="button__right" on:click{nextCard}>next</button>
+    <button class="button__right">next</button>
   </div>
 </section>
 
@@ -117,6 +129,8 @@ const prevCard=()=>{
     height: 100%;
     position: absolute;
     backface-visibility: hidden; 
+    transform-style: preserve-3d;
+
     overflow: hidden;
     border-radius: 16;
     box-shadow: 0px 3px 18px 3px rgba(0, 0, 0, 0.2);
