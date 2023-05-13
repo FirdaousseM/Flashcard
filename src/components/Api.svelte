@@ -1,28 +1,30 @@
 <script>
   import { onMount } from "svelte";
+  import { dictionaries } from "../scripts/Dictionnaries";
 
-  let apiAddress = "https://api.dictionaryapi.dev/api/v2/entries/en/hello"/* + word*/;
   let apiData = {};
-  let word = "";
+  export let word;
   let meanings = [];
+  let apiAddress = "https://api.dictionaryapi.dev/api/v2/entries/en/" + word;
+
 
   onMount(async () => {
     fetch(apiAddress)
     .then(response => response.json())
     .then(data => {
       apiData = data;
-      word = apiData[0].word;
       meanings = apiData[0].meanings;
     }).catch(error => {
       console.log(error);
       return [];
     });
 
-  })
-
+  });
 
 
 </script>
+
+
 
 <div class="recto">
   <h2>{word}</h2>
