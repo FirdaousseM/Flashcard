@@ -2,7 +2,6 @@
   import { onMount } from "svelte";
   import { dictionaries } from "../scripts/Dictionnaries";
 
-
   let apiData = {};
   export let word;
   let meanings = [];

@@ -6,6 +6,7 @@
 
 <main>
   <h1>Flashcard</h1>
+
   <CardSet></CardSet>
 </main>
 
