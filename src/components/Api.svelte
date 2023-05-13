@@ -2,7 +2,6 @@
   import { onMount } from "svelte";
 
   let apiAddress = "https://api.dictionaryapi.dev/api/v2/entries/en/hello"/* + word*/;
-
   let apiData = {};
   let word = "";
   let meanings = [];
