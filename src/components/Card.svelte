@@ -3,8 +3,8 @@
 <script >
 
   import { dictionaries } from '../scripts/Dictionnaries';
-  import Api from './Api.svelte';
-
+  import { onMount } from 'svelte';
+  
   //export let setNumber;
   let setNumber = 1;
 
@@ -12,41 +12,59 @@
   let userDictionary = dictionary;
 
   let progress = 2 + 10;
-  let isFlipped=false;
-//words and definitons are passed into an reactive array
-//card_number is the porsition of the array
-let card_number=1;
-$: word=dictionaries[1][card_number] ;
-$:definition=[card_number];
-
-//functions
-const fun= () => isFlipped=!isFlipped;  
-
-const prevCard=()=>{
-  let isFlipped=false;
-  if(card_number===1){
-    card_number = 9;
-  }
-  else{
-    card_number-=1;
-  }
- 
-}
-
-const nextCard=()=>{
-  let isFlipped=false;
-  if(card_number===10){
-    card_number=0;
-  }
-  else{
-    card_number+=1;
-  }
+  let isFlipped = false;
   
-}
+  //words and definitons are passed into an reactive array
+  //cardNumber is the porsition of the array
+
+  $: cardNumber=1;
+  $: word=dictionary[cardNumber];
+  $: meanings = []
+
+  /*****************
+   * API           *
+   *****************/
+  let apiAddress = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+
+  onMount(async () => {
+    dictionary.forEach(oneWord => {
+      fetch(apiAddress + oneWord)
+      .then(response => response.json())
+      .then(data => {
+        meanings = [...meanings, data[0].meanings];
+      }).catch(error => {
+        console.log(error);
+        return [];
+      });
+    })
+  });
+
+  //functions
+  const fun= () => isFlipped=!isFlipped;  
+
+  const prevCard = () => {
+    let isFlipped=false;
+    if(cardNumber===1){
+      cardNumber = 9;
+    }
+    else{
+      cardNumber -= 1;
+    }
+  }
+
+  const nextCard = () => {
+    let isFlipped=false;
+    if(cardNumber===9){
+      cardNumber=0;
+    }
+    else{
+      cardNumber+=1;
+    }   
+  }
 
 </script>
-<section>
 
+<section>
   <div class="card">
     <div class="card__inner" class:flip={isFlipped}>
       <div class="card__position cardRecto">
@@ -54,15 +72,16 @@ const nextCard=()=>{
       </div>
       <div class="card__position cardVerso">
         <div class="card_content">
-          
-          <div class="definition-title">
-            <h3>monsieur</h3>
-          </div>
-          <div class="definition-desc">
-            <p>madame</p>
-          </div>
-          
-          
+          {#each meanings as meaning, index}
+            {#if index == cardNumber}            
+              <div class="definition-title">
+                <h3>{meaning[0].partOfSpeech}</h3>
+              </div>
+              <div class="definition-desc">
+                <p>{meaning[0].definitions[0].definition}</p>
+              </div>
+            {/if}
+          {/each}
         </div>
       </div>
     </div>
@@ -70,38 +89,21 @@ const nextCard=()=>{
     
   <div class="progress-bar" >
     <div id="my_progress" style="width:{progress}%">
-        <div id="my_bar"></div>
+      <div id="my_bar"></div>
     </div>
   </div>
   <div class="buttonFlip">
-    <button class="button__left">prev</button>
-    <button  on:click={fun}>Flip Back</button>
-    <button class="button__right">next</button>
+    <button class="button__left" on:click={prevCard}>prev</button>
+    <button on:click={fun}>Flip Back</button>
+    <button class="button__right" on:click={nextCard}>next</button>
   </div>
 </section>
 
 <style>
-  .definition-title{
-    display: flex;
-    justify-content: flex-start;
-  }
-  .definition-title h3{
-    font-size: 20px;
-    font-style: bold;
-    padding:25px;
-    width:150px;
-
-  }
-  .definition-desc{
-    display:flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding:25px;
-  }
-
   section{
     margin-bottom: 30px;
   }
+
   .card{
     margin: 100px auto 0;
     width: 800px;
@@ -122,6 +124,7 @@ const nextCard=()=>{
   .flip{
     transform: rotateY(180deg);
   }
+
   .card__position{
     /* width: 600px;
     height: 400px; */
@@ -141,23 +144,47 @@ const nextCard=()=>{
     align-items: center;
     justify-content: center;
   }
+
   .card_content{
     display: flex;
     align-items: center;
     justify-content: center;
     /* padding: 30px; */
   }
+
   .cardRecto h1{
     font-size:32px;
   }
+
   .cardVerso{
     transform: rotateY(180deg);
+  }
+
+  .definition-title{
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .definition-title h3{
+    font-size: 20px;
+    font-style: bold;
+    padding:25px;
+    width:150px;
+
+  }
+
+  .definition-desc{
+    display:flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding:25px;
   }
 
   /* buttons */
   .buttonFlip{
     margin-top:20px;
   }
+
   .button__left{
     width: 50px;
     height: 40px;
