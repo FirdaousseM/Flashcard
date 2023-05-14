@@ -2,7 +2,7 @@
   import { dictionaries } from "../scripts/Dictionnaries";
   import { push, pop, replace } from "svelte-spa-router";
 
-  let setChoice = -1;
+  let setChoice = 0;
   const chooseSet = (event) => {
     switch (event.target.id) {
       case "set1":
@@ -35,24 +35,3 @@
   </div>
 </div>
 
-<style>
-  .menu__content {
-    display: flex;
-    justify-content: space-around;
-    gap: 10em;
-  }
-
-  .menu__content__option {
-    aspect-ratio: 5/7;
-    width: 15em;
-
-    background-color: #4d1e83;
-
-    border: 5px solid black;
-    border-radius: 1em;
-
-    padding: 1em;
-
-    cursor: pointer;
-  }
-</style>
