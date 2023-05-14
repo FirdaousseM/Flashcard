@@ -170,7 +170,7 @@
 
   <div>
     <button on:click={success}>J'ai réussi ce mot</button>
-    <button on:click={reset} style="display:{displayreset}">Reset</button>
+    <button class="resetButton" on:click={reset} style="display:{displayreset}">Reset</button>
   </div>
 
   <div class="button__flip">
@@ -195,6 +195,10 @@
 </section>
 
 <style>
+  .resetButton{
+    margin:10px auto;
+  }
+
   section {
     margin-bottom: 30px;
   }
