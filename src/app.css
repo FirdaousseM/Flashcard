@@ -60,64 +60,6 @@ button:focus-visible {
 /***************************/
 
 
-/***** WORD TO DEFINE *****/
-
-.recto{
-  
-}
-
-/**************************/
-
-
-/***** DEFINITIONS *****/
-
-
-.verso{
-  background-color: var(--verso-bg-color);
-  padding: 1em;
-}
-
-.definition-block{
-  display: flex;
-  align-items: center;
-  border-bottom: white 1px solid;
-}
-
-.definition-block:nth-last-child(1){
-  border: none;
-}
-
-.definition-block__type{
-  min-width: 50%; 
-  border-right: white 1px solid;
-}
-
-.definition-block__content{
-  min-width: 50%;
-}
-
-/***********************/
-
-/*
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-
-*/
-
-
 
 @media (prefers-color-scheme: light) {
   :root {
