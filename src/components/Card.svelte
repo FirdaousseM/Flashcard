@@ -7,7 +7,7 @@
   //import methods for routing
   import { push, pop, replace } from "svelte-spa-router";
   //import Score component
-  import Score from './Score.svelte';
+  import Score from "./Score.svelte";
   //import to use svelte icons previous and next
   import IoIosArrowBack from "svelte-icons/io/IoIosArrowBack.svelte";
   import IoIosArrowForward from "svelte-icons/io/IoIosArrowForward.svelte";
@@ -16,7 +16,6 @@
   let setNumber = params.id;
 
   let dictionary = dictionaries[setNumber];
-  
 
   let isFlipped = false;
 
@@ -28,23 +27,15 @@
   $: userScore = 0;
 
   $: userDictionary = [...dictionary];
-  
+
   $: word = userDictionary[cardNumber];
-  $: meanings = []
-  let prog = 0;
-  $: if (cardNumber === 9) {
-    prog = 100;
-  } else {
-    prog = cardNumber * 10;
-  }
+  $: meanings = [];
 
   /*****************
    * API           *
    *****************/
   let apiAddress = "https://api.dictionaryapi.dev/api/v2/entries/en/";
 
-
-  
   onMount(async () => {
     dictionary.forEach((oneWord) => {
       fetch(apiAddress + oneWord)
@@ -58,16 +49,17 @@
         });
     });
 
-    if(parseInt(localStorage.getItem("userScore"+setNumber)) > -1){
-      console.log(parseInt(localStorage.getItem("userScore"+setNumber)))
-      userScore = parseInt(localStorage.getItem("userScore"+setNumber));
+    if (parseInt(localStorage.getItem("userScore" + setNumber)) > -1) {
+      console.log(parseInt(localStorage.getItem("userScore" + setNumber)));
+      userScore = parseInt(localStorage.getItem("userScore" + setNumber));
     }
+    // localStorage.clear();
   });
 
   /*****************
    * CARTE         *
    *****************/
-  
+
   //functions to flip and change card
   const flipCard = () => {
     isFlipped = !isFlipped;
@@ -75,8 +67,8 @@
 
   const prevCard = () => {
     isFlipped = false;
-    if (cardNumber === 0){
-      cardNumber = userDictionary.length-1;
+    if (cardNumber === 0) {
+      cardNumber = userDictionary.length - 1;
     } else {
       cardNumber -= 1;
     }
@@ -84,14 +76,12 @@
 
   const nextCard = () => {
     isFlipped = false;
-    if(cardNumber === userDictionary.length-1){
+    if (cardNumber === userDictionary.length - 1) {
       cardNumber = 0;
-    }
-    else{
+    } else {
       cardNumber += 1;
-    }   
+    }
   };
-
 
   /*****************
    * NAVIGATION    *
@@ -100,44 +90,53 @@
   const goToMenu = () => {
     push("/Menu");
     try {
-      localStorage.setItem("userScore"+setNumber, JSON.stringify(userScore));
+      localStorage.setItem("userScore" + setNumber, JSON.stringify(userScore));
     } catch (error) {
       console.log(error);
     }
-
   };
 
   /*****************
    * SCORE         *
    *****************/
-  
+
   const success = () => {
-      if(userDictionary.length > 0 && userScore < dictionary.length){
-        userScore++;
-        console.log(dictionary.length)
-        userDictionary.splice(cardNumber, 1);
-        console.log('userDictionary :' + userDictionary);
-        word = userDictionary[cardNumber];
-        console.log('word :' + word);
-        meanings.splice(cardNumber, 1);
-        console.log('meanings :' + meanings);
-      }
-      try {
-      localStorage.setItem("userScore"+setNumber, JSON.stringify(userScore));
+    if (userDictionary.length > 0 && userScore < dictionary.length) {
+      userScore++;
+      userDictionary.splice(cardNumber, 1);
+      word = userDictionary[cardNumber];
+      meanings.splice(cardNumber, 1);
+      arrayEmpty();
+    }
+    try {
+      localStorage.setItem("userScore" + setNumber, JSON.stringify(userScore));
     } catch (error) {
       console.log(error);
-    }    
+    }
   };
 
+  /*****************
+   * RESET BUTTON   *
+   *****************/
+  $: displayreset = "none";
+  const arrayEmpty = () => {
+    if (userScore == dictionary.length) {
+      displayreset = "block";
+    } else {
+      displayreset = "none";
+    }
+  };
+
+  const reset = () => {
+    localStorage.clear();
+    userDictionary = dictionary;
+    userScore = 0;
+  };
 </script>
 
 <section>
-  <button class="button__home" on:click={goToMenu}>Go to Home</button>
-  
-  <!-- SCORE - debut -->
-  <Score score={userScore} wordPerSet={dictionary.length}></Score>
-  <!-- SCORE - fin -->
-  
+  <button class="button__home" on:click={goToMenu}>Accueil</button>
+
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div class="card" on:click={flipCard}>
     <div class="card__content" class:flip={isFlipped}>
@@ -163,8 +162,9 @@
 
   <div>
     <button on:click={success}>J'ai réussi ce mot</button>
+    <button on:click={reset} style="display:{displayreset}">Reset</button>
   </div>
-  
+
   <div class="button__flip">
     <button class="button__flip--left" on:click={prevCard}
       ><IoIosArrowBack /></button
@@ -174,15 +174,24 @@
     >
   </div>
   <div class="progress-bar">
-    <div id="progress-bar__progress" style="width:{prog}%">
+    <div id="progress-bar__progress" style="width:{userScore * 10}%">
       <div id="progress-bar__bar" />
     </div>
+  </div>
+
+  <div class="score-container">
+    <!-- SCORE - debut -->
+    <Score score={userScore} wordPerSet={dictionary.length} />
+    <!-- SCORE - fin -->
   </div>
 </section>
 
 <style>
   section {
     margin-bottom: 30px;
+  }
+  .score-container{
+    margin-top:10px;
   }
 
   .card {
