@@ -10,7 +10,17 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.3",
+    "rollup-plugin-copy": "^3.4.0",
     "svelte": "^3.55.1",
     "vite": "^4.2.0"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.7",
+    "bootstrap": "^5.2.3",
+    "classnames": "^2.3.2",
+    "flowbite": "^1.6.5",
+    "flowbite-svelte": "^0.35.1",
+    "svelte-icons": "^2.1.0",
+    "svelte-spa-router": "^3.3.0"
   }
 }
