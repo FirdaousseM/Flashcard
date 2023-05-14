@@ -5,12 +5,13 @@
   import { dictionaries } from '../scripts/Dictionnaries';
   import { onMount } from 'svelte';
   import { push, pop, replace } from "svelte-spa-router";
+  import Score from './Score.svelte';
 
   export let params = {};
   let setNumber = params.id;
 
   let dictionary = dictionaries[setNumber];
-  let userDictionary = dictionary;
+  
 
   let progress = 2 + 10;
   let isFlipped = false;
@@ -18,8 +19,12 @@
   //words and definitons are passed into an reactive array
   //cardNumber is the porsition of the array
 
-  $: cardNumber=1;
-  $: word=dictionary[cardNumber];
+  $: cardNumber = 1;
+
+  $: userScore = 0;
+  $: userDictionary =[...dictionary];
+  
+  $: word = userDictionary[cardNumber];
   $: meanings = []
 
   /*****************
@@ -40,13 +45,16 @@
     })
   });
 
-  //functions
-  const fun= () => isFlipped=!isFlipped;  
+
+  /*****************
+   * CARTE         *
+   *****************/
+  const fun = () => isFlipped=!isFlipped;  
 
   const prevCard = () => {
     let isFlipped=false;
-    if(cardNumber===1){
-      cardNumber = 9;
+    if(cardNumber === 0){
+      cardNumber = userDictionary.length-1;
     }
     else{
       cardNumber -= 1;
@@ -55,16 +63,39 @@
 
   const nextCard = () => {
     let isFlipped=false;
-    if(cardNumber===9){
-      cardNumber=0;
+    if(cardNumber === userDictionary.length){
+      cardNumber = 0;
     }
     else{
-      cardNumber+=1;
+      cardNumber += 1;
     }   
   }
 
+  /*****************
+   * NAVIGATION    *
+   *****************/
+
   const goToMenu = () => {
     push("/Menu");
+  }
+
+  /*****************
+   * SCORE         *
+   *****************/
+  
+  const success = (successDef) => {
+    if (successDef){
+      if(userDictionary.length > 0 && userScore < dictionary.length){
+        userScore++;
+        console.log(dictionary.length)
+        userDictionary.splice(cardNumber, 1);
+        console.log('userDictionary :' + userDictionary);
+        word = userDictionary[cardNumber];
+        console.log('word :' + word);
+        meanings.splice(cardNumber, 1);
+        console.log('meanings :' + meanings);
+      }    
+    } 
   }
 
 </script>
@@ -72,6 +103,11 @@
 <section>
   <button class="button__right" on:click={goToMenu}>Menu</button>
 
+  <!-- SCORE - debut -->
+  <Score score={userScore} wordPerSet={dictionary.length}></Score>
+  <!-- SCORE - fin -->
+
+  <!-- CARTE - debut -->
   <div class="card">
     <div class="card__inner" class:flip={isFlipped}>
       <div class="card__position cardRecto">
@@ -93,17 +129,31 @@
       </div>
     </div>
   </div>  
-    
+  <!-- CARTE - fin -->
+
+  <!-- PROGRESS BAR - debut -->
   <div class="progress-bar" >
     <div id="my_progress" style="width:{progress}%">
       <div id="my_bar"></div>
     </div>
   </div>
+  <!-- PROGRESS BAR - fin -->
+
+  <div>
+    <button on:click={() => (success(true))}>J'ai réussi ce mot</button>
+  </div>
+  
+
+  <!-- BOUTONS CARTE - debut -->
   <div class="buttonFlip">
     <button class="button__left" on:click={prevCard}>prev</button>
     <button on:click={fun}>Flip Back</button>
     <button class="button__right" on:click={nextCard}>next</button>
   </div>
+
+
+
+  <!-- BOUTONS CARTE - fin -->
 </section>
 
 <style>

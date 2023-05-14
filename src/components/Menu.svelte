@@ -1,7 +1,5 @@
 <script>
   import { dictionaries } from "../scripts/Dictionnaries";
-  import Card from "./Card.svelte";
-
   import { push, pop, replace } from "svelte-spa-router";
 
 
@@ -52,5 +50,7 @@
     border-radius: 1em;
 
     padding: 1em;
+
+    cursor: pointer;
   }
 </style>
