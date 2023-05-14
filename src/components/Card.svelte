@@ -107,6 +107,11 @@
       word = userDictionary[cardNumber];
       meanings.splice(cardNumber, 1);
       arrayEmpty();
+      cardNumber = 0;
+      console.log(dictionary.length);
+      console.log("userDictionary :" + userDictionary);
+      console.log("word :" + word);
+      console.log("meanings :" + meanings);
     }
     try {
       localStorage.setItem("userScore" + setNumber, JSON.stringify(userScore));
