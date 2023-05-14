@@ -167,8 +167,11 @@
 
   <div>
     <button on:click={success}>J'ai réussi ce mot</button>
-    <button on:click={reset} style="display:{displayreset}">Reset</button>
+    <button class="resetButton" on:click={reset} style="display:{displayreset}"
+      >Reset</button
+    >
   </div>
+  <div />
 
   <div class="button__flip">
     <button class="button__flip--left" on:click={prevCard}
@@ -215,10 +218,14 @@
     cursor: pointer;
     position: relative;
   }
+  .resetButton{
+    margin:10px auto;
+  }
 
   .flip {
     transform: rotateY(180deg);
   }
+
 
   /* delay appearance of the text at the back of the card to hide it */
   @keyframes change-color{
