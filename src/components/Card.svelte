@@ -1,10 +1,14 @@
-<!-- this is where the magic improt happens -->
+<!-- this is where the magic import happens -->
 
-<script >
-
-  import { dictionaries } from '../scripts/Dictionnaries';
-  import { onMount } from 'svelte';
+<script>
+  //import methods for API
+  import { dictionaries } from "../scripts/Dictionnaries";
+  import { onMount } from "svelte";
+  //import methods for routing
   import { push, pop, replace } from "svelte-spa-router";
+  //import to use svelte icons previous and next
+  import IoIosArrowBack from "svelte-icons/io/IoIosArrowBack.svelte";
+  import IoIosArrowForward from "svelte-icons/io/IoIosArrowForward.svelte";
 
   export let params = {};
   let setNumber = params.id;
@@ -12,15 +16,20 @@
   let dictionary = dictionaries[setNumber];
   let userDictionary = dictionary;
 
-  let progress = 2 + 10;
   let isFlipped = false;
-  
+
   //words and definitons are passed into an reactive array
   //cardNumber is the porsition of the array
 
-  $: cardNumber=1;
-  $: word=dictionary[cardNumber];
-  $: meanings = []
+  $: cardNumber = 0;
+  $: word = dictionary[cardNumber];
+  $: meanings = [];
+  let prog = 0;
+  $: if (cardNumber === 9) {
+    prog = 100;
+  } else {
+    prog = cardNumber * 10;
+  }
 
   /*****************
    * API           *
@@ -28,59 +37,59 @@
   let apiAddress = "https://api.dictionaryapi.dev/api/v2/entries/en/";
 
   onMount(async () => {
-    dictionary.forEach(oneWord => {
+    dictionary.forEach((oneWord) => {
       fetch(apiAddress + oneWord)
-      .then(response => response.json())
-      .then(data => {
-        meanings = [...meanings, data[0].meanings];
-      }).catch(error => {
-        console.log(error);
-        return [];
-      });
-    })
+        .then((response) => response.json())
+        .then((data) => {
+          meanings = [...meanings, data[0].meanings];
+        })
+        .catch((error) => {
+          console.log(error);
+          return [];
+        });
+    });
   });
 
-  //functions
-  const fun= () => isFlipped=!isFlipped;  
+  //functions to flip and change card
+  const flipCard = () => {
+    isFlipped = !isFlipped;
+  };
 
   const prevCard = () => {
-    let isFlipped=false;
-    if(cardNumber===1){
+    isFlipped = false;
+    if (cardNumber === 1) {
       cardNumber = 9;
-    }
-    else{
+    } else {
       cardNumber -= 1;
     }
-  }
+  };
 
   const nextCard = () => {
-    let isFlipped=false;
-    if(cardNumber===9){
-      cardNumber=0;
+    isFlipped = false;
+    if (cardNumber === 9) {
+      cardNumber = 0;
+    } else {
+      cardNumber += 1;
     }
-    else{
-      cardNumber+=1;
-    }   
-  }
+  };
 
   const goToMenu = () => {
     push("/Menu");
-  }
-
+  };
 </script>
 
 <section>
-  <button class="button__right" on:click={goToMenu}>Menu</button>
-
-  <div class="card">
-    <div class="card__inner" class:flip={isFlipped}>
+  <button class="button__home" on:click={goToMenu}>Go to Home</button>
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div class="card" on:click={flipCard}>
+    <div class="card__content" class:flip={isFlipped}>
       <div class="card__position cardRecto">
         <h1>{word}</h1>
       </div>
-      <div class="card__position cardVerso">
-        <div class="card_content">
+      <div class="card__position cardVerso" class:hidetext={isFlipped}>
+        <div class="cardVerso__content">
           {#each meanings as meaning, index}
-            {#if index == cardNumber}            
+            {#if index == cardNumber}
               <div class="definition-title">
                 <h3>{meaning[0].partOfSpeech}</h3>
               </div>
@@ -92,127 +101,161 @@
         </div>
       </div>
     </div>
-  </div>  
-    
-  <div class="progress-bar" >
-    <div id="my_progress" style="width:{progress}%">
-      <div id="my_bar"></div>
-    </div>
   </div>
-  <div class="buttonFlip">
-    <button class="button__left" on:click={prevCard}>prev</button>
-    <button on:click={fun}>Flip Back</button>
-    <button class="button__right" on:click={nextCard}>next</button>
+
+  <div class="button__flip">
+    <button class="button__flip--left" on:click={prevCard}
+      ><IoIosArrowBack /></button
+    >
+    <button class="button__flip--right" on:click={nextCard}
+      ><IoIosArrowForward /></button
+    >
+  </div>
+  <div class="progress-bar">
+    <div id="progress-bar__progress" style="width:{prog}%">
+      <div id="progress-bar__bar" />
+    </div>
   </div>
 </section>
 
 <style>
-  section{
+  section {
     margin-bottom: 30px;
   }
 
-  .card{
+  .card {
     margin: 100px auto 0;
     width: 800px;
     height: 400px;
-    perspective: 1000px; 
+    perspective: 1000px;
     padding: 30px;
   }
 
-  .card__inner{
+  .card__content {
     width: 100%;
     height: 100%;
     transition: transform 1s;
     transform-style: preserve-3d;
     cursor: pointer;
-    position:relative;
+    position: relative;
   }
 
-  .flip{
+  .flip {
     transform: rotateY(180deg);
   }
 
-  .card__position{
-    /* width: 600px;
-    height: 400px; */
+  /* delay appearance of the text at the back of the card to hide it */
+  @keyframes change-color{
+    100% {color:black}
+  }
+  .hidetext{
+    animation: change-color 0.5s forwards;
+  }
+
+  .card__position {
     width: 100%;
     height: 100%;
     position: absolute;
-    backface-visibility: hidden; 
+    backface-visibility: hidden;
     transform-style: preserve-3d;
-
     overflow: hidden;
     border-radius: 16;
     box-shadow: 0px 3px 18px 3px rgba(0, 0, 0, 0.2);
   }
 
-  .cardRecto{
+  .cardRecto {
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .card_content{
+  .cardVerso__content {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* padding: 30px; */
   }
 
-  .cardRecto h1{
-    font-size:32px;
+  .cardRecto h1 {
+    font-size: 32px;
   }
 
-  .cardVerso{
+  .cardVerso {
+    color:rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transform: rotateY(180deg);
   }
 
-  .definition-title{
+  .definition-title {
     display: flex;
     justify-content: flex-start;
   }
 
-  .definition-title h3{
+  .definition-title h3 {
     font-size: 20px;
     font-style: bold;
-    padding:25px;
-    width:150px;
-
+    padding: 25px;
+    width: 150px;
   }
 
-  .definition-desc{
-    display:flex;
+  .definition-desc {
+    display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding:25px;
+    padding: 25px;
   }
 
   /* buttons */
-  .buttonFlip{
-    margin-top:20px;
+  button {
+    border-color: #c0c0c0;
   }
 
-  .button__left{
+  .button__flip {
+    margin-top: 20px;
+  }
+  .button__home {
+    width: 200px;
+    height: 50px;
+  }
+
+  .button__flip--left {
     width: 50px;
     height: 40px;
   }
 
-  .button__right{
+  .button__flip--right {
     width: 50px;
     height: 40px;
   }
 
   /* Progress bar */
-  #my_progress {
-		width: 100%;
-		height: 50px;
-		position: relative;
-		margin-top: 5%;
-	}
-	
-	#my_bar {
-		height: 30px;
-		background-color: hsl(102, 27%, 60%);	
-		border: 1px solid #333;
-	}
+
+  .progress-bar {
+    width: 90%;
+    margin-left: 42px;
+    height: 18px;
+    /* background: #808080; */
+    border-radius: 10px;
+    box-shadow: 0 0 5px #35ec3b7c;
+    transition: all 0.3s;
+  }
+  :root {
+    --custom-color: {getColor()};
+  }
+  #progress-bar__progress {
+    width: 100%;
+    height: 14px;
+    position: relative;
+    margin-top: 5%;
+    transition: all 0.3s;
+  }
+
+  #progress-bar__bar {
+    height: 18px;
+    border-radius: 10px;
+    background-color: hsl(102, 27%, 60%);
+    border: 0.5px solid hsl(102, 27%, 60%);
+    transition: all 0.3s;
+  }
 </style>
