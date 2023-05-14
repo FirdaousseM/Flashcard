@@ -1,13 +1,9 @@
 <script>
   import { dictionaries } from "../scripts/Dictionnaries";
-  import Card from "./Card.svelte";
-  //import methods for routing
   import { push, pop, replace } from "svelte-spa-router";
 
   let setChoice = -1;
   const chooseSet = (event) => {
-    console.log(event.target);
-    //document.querySelector('.menu').style.display = 'none';
     switch (event.target.id) {
       case "set1":
         setChoice = 0;
@@ -56,5 +52,7 @@
     border-radius: 1em;
 
     padding: 1em;
+
+    cursor: pointer;
   }
 </style>

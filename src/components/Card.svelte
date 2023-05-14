@@ -6,6 +6,8 @@
   import { onMount } from "svelte";
   //import methods for routing
   import { push, pop, replace } from "svelte-spa-router";
+  //import Score component
+  import Score from './Score.svelte';
   //import to use svelte icons previous and next
   import IoIosArrowBack from "svelte-icons/io/IoIosArrowBack.svelte";
   import IoIosArrowForward from "svelte-icons/io/IoIosArrowForward.svelte";
@@ -14,7 +16,7 @@
   let setNumber = params.id;
 
   let dictionary = dictionaries[setNumber];
-  let userDictionary = dictionary;
+  
 
   let isFlipped = false;
 
@@ -22,8 +24,12 @@
   //cardNumber is the porsition of the array
 
   $: cardNumber = 0;
-  $: word = dictionary[cardNumber];
-  $: meanings = [];
+
+  $: userScore = 0;
+  $: userDictionary = [...dictionary];
+  
+  $: word = userDictionary[cardNumber];
+  $: meanings = []
   let prog = 0;
   $: if (cardNumber === 9) {
     prog = 100;
@@ -50,6 +56,10 @@
     });
   });
 
+  /*****************
+   * CARTE         *
+   *****************/
+  
   //functions to flip and change card
   const flipCard = () => {
     isFlipped = !isFlipped;
@@ -57,8 +67,8 @@
 
   const prevCard = () => {
     isFlipped = false;
-    if (cardNumber === 1) {
-      cardNumber = 9;
+    if (cardNumber === 0){
+      cardNumber = userDictionary.length-1;
     } else {
       cardNumber -= 1;
     }
@@ -66,20 +76,51 @@
 
   const nextCard = () => {
     isFlipped = false;
-    if (cardNumber === 9) {
+    if(cardNumber === userDictionary.length-1){
       cardNumber = 0;
-    } else {
-      cardNumber += 1;
     }
+    else{
+      cardNumber += 1;
+    }   
   };
+
+
+  /*****************
+   * NAVIGATION    *
+   *****************/
 
   const goToMenu = () => {
     push("/Menu");
   };
+
+  /*****************
+   * SCORE         *
+   *****************/
+  
+  const success = (successDef) => {
+    if (successDef){
+      if(userDictionary.length > 0 && userScore < dictionary.length){
+        userScore++;
+        console.log(dictionary.length)
+        userDictionary.splice(cardNumber, 1);
+        console.log('userDictionary :' + userDictionary);
+        word = userDictionary[cardNumber];
+        console.log('word :' + word);
+        meanings.splice(cardNumber, 1);
+        console.log('meanings :' + meanings);
+      }    
+    } 
+  };
+
 </script>
 
 <section>
   <button class="button__home" on:click={goToMenu}>Go to Home</button>
+  
+  <!-- SCORE - debut -->
+  <Score score={userScore} wordPerSet={dictionary.length}></Score>
+  <!-- SCORE - fin -->
+  
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div class="card" on:click={flipCard}>
     <div class="card__content" class:flip={isFlipped}>
@@ -103,6 +144,10 @@
     </div>
   </div>
 
+  <div>
+    <button on:click={() => (success(true))}>J'ai réussi ce mot</button>
+  </div>
+  
   <div class="button__flip">
     <button class="button__flip--left" on:click={prevCard}
       ><IoIosArrowBack /></button
