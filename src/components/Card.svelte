@@ -4,9 +4,10 @@
 
   import { dictionaries } from '../scripts/Dictionnaries';
   import { onMount } from 'svelte';
-  
-  //export let setNumber;
-  let setNumber = 1;
+  import { push, pop, replace } from "svelte-spa-router";
+
+  export let params = {};
+  let setNumber = params.id;
 
   let dictionary = dictionaries[setNumber];
   let userDictionary = dictionary;
@@ -62,9 +63,15 @@
     }   
   }
 
+  const goToMenu = () => {
+    push("/Menu");
+  }
+
 </script>
 
 <section>
+  <button class="button__right" on:click={goToMenu}>Menu</button>
+
   <div class="card">
     <div class="card__inner" class:flip={isFlipped}>
       <div class="card__position cardRecto">
