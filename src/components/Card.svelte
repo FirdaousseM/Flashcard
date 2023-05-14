@@ -29,6 +29,7 @@
   $: userDictionary = [...dictionary];
 
   $: word = userDictionary[cardNumber];
+  $: meaningsAPI = [];
   $: meanings = [];
 
   /*****************
@@ -41,7 +42,8 @@
       fetch(apiAddress + oneWord)
         .then((response) => response.json())
         .then((data) => {
-          meanings = [...meanings, data[0].meanings];
+          meaningsAPI = [...meaningsAPI, data[0].meanings];
+          meanings = [...meaningsAPI]
         })
         .catch((error) => {
           console.log(error);
@@ -53,7 +55,6 @@
       console.log(parseInt(localStorage.getItem("userScore" + setNumber)));
       userScore = parseInt(localStorage.getItem("userScore" + setNumber));
     }
-    // localStorage.clear();
   });
 
   /*****************
@@ -134,8 +135,10 @@
 
   const reset = () => {
     localStorage.clear();
-    userDictionary = dictionary;
+    userDictionary = [...dictionary];
     userScore = 0;
+    meanings = [...meaningsAPI];
+
   };
 </script>
 
