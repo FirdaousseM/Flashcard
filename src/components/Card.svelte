@@ -26,6 +26,7 @@
   $: cardNumber = 0;
 
   $: userScore = 0;
+
   $: userDictionary = [...dictionary];
   
   $: word = userDictionary[cardNumber];
@@ -42,6 +43,8 @@
    *****************/
   let apiAddress = "https://api.dictionaryapi.dev/api/v2/entries/en/";
 
+
+  
   onMount(async () => {
     dictionary.forEach((oneWord) => {
       fetch(apiAddress + oneWord)
@@ -54,6 +57,11 @@
           return [];
         });
     });
+
+    if(parseInt(localStorage.getItem("userScore"+setNumber)) > -1){
+      console.log(parseInt(localStorage.getItem("userScore"+setNumber)))
+      userScore = parseInt(localStorage.getItem("userScore"+setNumber));
+    }
   });
 
   /*****************
@@ -91,14 +99,19 @@
 
   const goToMenu = () => {
     push("/Menu");
+    try {
+      localStorage.setItem("userScore"+setNumber, JSON.stringify(userScore));
+    } catch (error) {
+      console.log(error);
+    }
+
   };
 
   /*****************
    * SCORE         *
    *****************/
   
-  const success = (successDef) => {
-    if (successDef){
+  const success = () => {
       if(userDictionary.length > 0 && userScore < dictionary.length){
         userScore++;
         console.log(dictionary.length)
@@ -108,8 +121,12 @@
         console.log('word :' + word);
         meanings.splice(cardNumber, 1);
         console.log('meanings :' + meanings);
-      }    
-    } 
+      }
+      try {
+      localStorage.setItem("userScore"+setNumber, JSON.stringify(userScore));
+    } catch (error) {
+      console.log(error);
+    }    
   };
 
 </script>
@@ -145,7 +162,7 @@
   </div>
 
   <div>
-    <button on:click={() => (success(true))}>J'ai réussi ce mot</button>
+    <button on:click={success}>J'ai réussi ce mot</button>
   </div>
   
   <div class="button__flip">
